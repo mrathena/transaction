@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mrathena.transaction.dao.TicketMapper">
+	<resultMap id="BaseResultMap" type="com.mrathena.transaction.entity.Ticket">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="price" jdbcType="INTEGER" property="price" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+		<result column="lastUpdateTime" jdbcType="TIMESTAMP" property="lastUpdateTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, price, count, lastUpdateTime
+	</sql>
+	<insert id="insert" parameterType="com.mrathena.transaction.entity.Ticket">
+		insert into ticket (id, price, count, 
+			lastUpdateTime)
+		values (#{id,jdbcType=INTEGER}, #{price,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}, 
+			#{lastUpdateTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.mrathena.transaction.entity.Ticket">
+		insert into ticket
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="count != null">
+				count,
+			</if>
+			<if test="lastUpdateTime != null">
+				lastUpdateTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=INTEGER},
+			</if>
+			<if test="count != null">
+				#{count,jdbcType=INTEGER},
+			</if>
+			<if test="lastUpdateTime != null">
+				#{lastUpdateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.mrathena.transaction.entity.Ticket">
+		update ticket
+		set price = #{price,jdbcType=INTEGER},
+			count = #{count,jdbcType=INTEGER},
+			lastUpdateTime = #{lastUpdateTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.mrathena.transaction.entity.Ticket">
+		update ticket
+		<set>
+			<if test="price != null">
+				price = #{price,jdbcType=INTEGER},
+			</if>
+			<if test="count != null">
+				count = #{count,jdbcType=INTEGER},
+			</if>
+			<if test="lastUpdateTime != null">
+				lastUpdateTime = #{lastUpdateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from ticket
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from ticket
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+</mapper>

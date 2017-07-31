@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+	<properties resource="mbg/config.properties" />
+
+	<classPathEntry location="${jdbc.driver.path}" />
+
+	<context id="mysql" targetRuntime="MyBatis3">
+
+		<!-- 生成的Java文件的编码 -->
+		<property name="javaFileEncoding" value="UTF-8" />
+
+		<!-- 指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号 -->
+		<property name="beginningDelimiter" value="`" />
+		<property name="endingDelimiter" value="`" />
+		
+		<!-- (1.3.5新添加)只要在<context>下的<property>结点后添加该配置, 就可以生成带有fluent风格的model代码 -->
+		<plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin" />
+
+		<commentGenerator>
+			<property name="suppressDate" value="true" />
+			<!-- 生成model上的注释(dao和xml的注释已被修改源码而屏蔽) -->
+			<property name="suppressAllComments" value="false" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="${jdbc.driver.class}"
+			connectionURL="${jdbc.url}" userId="${jdbc.username}" password="${jdbc.password}" />
+
+		<!-- model.java -->
+		<javaModelGenerator targetPackage="${target.entity.package}"
+			targetProject="${target.java.path}">
+			<!-- 设置是否在getter方法中，对String类型字段调用trim()方法 -->
+			<property name="trimStrings" value="true" />
+			<!-- <property name="rootClass" value="${target.entity.base.class}"/> -->
+		</javaModelGenerator>
+
+		<!-- mapper.xml -->
+		<sqlMapGenerator targetPackage="${target.mapper.path}"
+			targetProject="${target.xml.path}">
+		</sqlMapGenerator>
+
+		<!-- mapper.java -->
+		<javaClientGenerator targetPackage="${target.dao.package}"
+			targetProject="${target.java.path}" type="XMLMAPPER">
+		</javaClientGenerator>
+
+		<table tableName="customer" domainObjectName="Customer" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" >
+			<property name="useActualColumnNames" value="true"/>
+		</table>
+		<table tableName="ticket" domainObjectName="Ticket" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" >
+			<property name="useActualColumnNames" value="true"/>
+		</table>
+
+		<!-- 
+		<table tableName="MERCHANT_BUSINESS_AUDIT" alias="mb" schema="jsh"
+			enableInsert="true" enableUpdateByPrimaryKey="true"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true"
+			enableSelectByExample="true" enableCountByExample="true"
+			enableDeleteByExample="false" enableUpdateByExample="false">
+			<generatedKey column="ID"
+				sqlStatement="select JSH.MERCHANT_BUSINESS_AUDIT_seq.nextval from dual" />
+		</table>
+		-->
+
+	</context>
+</generatorConfiguration>

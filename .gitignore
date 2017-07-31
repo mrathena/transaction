@@ -1,0 +1,14 @@
+# Compiled class files
+*.class
+
+# ignore Maven generated target folders
+target
+
+# ignore idea files
+.idea
+
+# ignore eclipse files
+.project
+.classpath
+.settings
+.metadata
