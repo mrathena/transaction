@@ -2,7 +2,6 @@ package com.mrathena.transaction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mrathena.transaction.dao.TicketMapper;
@@ -21,36 +20,31 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@Transactional
 	public boolean buyTicket(int ticketId) throws Exception {
 		log("查询剩余票数");
-		Ticket ticket = ticketMapper.selectByPrimaryKey(ticketId);
+//		Ticket ticket = ticketMapper.selectByPrimaryKey(ticketId);
+		Ticket ticket = ticketMapper.selectByIdForUpdate(ticketId);
 		ThreadKit.currentThreadSleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
 		int count = ticket.getCount();
 		if (count > 0) {
-			log("剩余票数:" + count + ", 开始购票");
+			log("购前余票:" + count + ", 开始购票");
 			int newCount = count - 1;
 			ticket.setCount(newCount);
 			int flag = ticketMapper.updateByPrimaryKeySelective(ticket);
 			if (flag != 0) {
-				log("购票成功, 剩余票数:" + newCount);
+				log("购票成功, 购后余票:" + newCount);
 			} else {
-				error("购票失败");
+				log("购票失败");
 			}
 		} else {
-			error("票已售完, 无法购票");
+			log("票已售完, 无法购票");
 		}
 		return true;
 	}
 	
 	private void log(String message) {
 		System.out.println(ThreadKit.getCurrentThreadName() + ": " + message);
-	}
-
-	private void error(String message) throws Exception {
-		log(message);
-		String value = ThreadKit.getCurrentThreadName() + ": " + message;
-		throw new Exception(value);
 	}
 
 }

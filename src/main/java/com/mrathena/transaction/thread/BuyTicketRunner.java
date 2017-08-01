@@ -9,7 +9,7 @@ public class BuyTicketRunner implements Runnable {
 	private TicketService service;
 	private CountDownLatch latch;
 
-	public BuyTicketRunner(TicketService service, int customerId, CountDownLatch latch) {
+	public BuyTicketRunner(TicketService service, CountDownLatch latch) {
 		this.service = service;
 		this.latch = latch;
 	}

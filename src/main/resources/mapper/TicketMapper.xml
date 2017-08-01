@@ -79,4 +79,11 @@
 		from ticket
 		where id = #{id,jdbcType=INTEGER}
 	</select>
+	<select id="selectByIdForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from ticket
+		where id = #{id,jdbcType=INTEGER}
+		for update
+	</select>
 </mapper>
