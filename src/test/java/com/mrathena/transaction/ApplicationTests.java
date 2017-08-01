@@ -9,14 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mrathena.transaction.service.TicketService;
-import com.mrathena.transaction.thread.售票Runner;
+import com.mrathena.transaction.thread.BuyTicketRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ApplicationTests {
 
 	@Autowired
-	private TicketService ticketService;
+	private TicketService customerService;
 	
 	@Test
 	public void 测试并发售票() {
@@ -24,8 +24,11 @@ public class ApplicationTests {
 		int count = 2;
 		CountDownLatch latch = new CountDownLatch(count);
 		
-		new Thread(new 售票Runner(ticketService, latch), "售票线程-1").start();
-		new Thread(new 售票Runner(ticketService, latch), "售票线程-2").start();
+		for (int i = 1; i <= count; i++) {
+			String threadName = "售票线程-" + i;
+			int customerId = i;
+			new Thread(new BuyTicketRunner(customerService, customerId, latch), threadName).start();
+		}
 		
 		// 主线程等待
 		try {

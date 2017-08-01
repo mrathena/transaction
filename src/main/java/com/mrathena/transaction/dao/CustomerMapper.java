@@ -1,7 +1,10 @@
 package com.mrathena.transaction.dao;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.mrathena.transaction.entity.Customer;
 
+@Mapper
 public interface CustomerMapper {
 
 	/** customer */

@@ -2,11 +2,13 @@ package com.mrathena.transaction.dao;
 
 import java.util.Date;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
 import com.mrathena.transaction.entity.Ticket;
 
+@Mapper
 public interface TicketMapper {
 
 	/** ticket */
@@ -27,7 +29,8 @@ public interface TicketMapper {
 	/** ticket */
 	int updateByPrimaryKey(Ticket record);
 	
-	@Update("update ticket set count = count - 1, lastUpdateDate = now() where id = #{id} and lastUpdateDate = #{date}")
+	// 乐观锁
+	@Update("update ticket set count = count - 1, lastUpdateTime = now() where id = #{id} and lastUpdateTime = #{date}")
 	int updateByIdAndLastUpdateDate(@Param("id") int id, @Param("date") Date date);
 
 }

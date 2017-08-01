@@ -2,6 +2,7 @@ package com.mrathena.transaction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mrathena.transaction.dao.TicketMapper;
@@ -12,31 +13,44 @@ import com.mrathena.transaction.tool.ThreadKit;
 public class TicketServiceImpl implements TicketService {
 
 	@Autowired
-	private TicketMapper mapper;
+	private TicketMapper ticketMapper;
+	
+	@Override
+	public int getTicketCount(int ticketId) {
+		return ticketMapper.selectByPrimaryKey(ticketId).getCount();
+	}
 
 	@Override
-	@Transactional
-	public void 售票(Integer id) throws Exception {
-		String name = ThreadKit.getCurrentThreadName();
-		System.out.println(name + ": 开始查询余票");
-		Ticket tickct = mapper.selectByPrimaryKey(id);
-		// 悲观锁. 谁先查询到最后一张票,票就是谁的. 而现实是谁都能看到最后一张票,手快的抢得到(即乐观锁)
-//		Tickct tickct = mapper.selectByIdForUpdate(id);
-		int count = tickct.getCount();
-		// 模拟查询过程花费时间, 创造并发可能性
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println(name + ": 查询余票结束, 余票: " + count);
-		if (count >= 1) {
-			tickct.setCount(count - 1);
-			mapper.updateByPrimaryKey(tickct);
-			System.out.println(name + ": 更新票数成功, 当前余票: " + tickct.getCount());
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public boolean buyTicket(int ticketId) throws Exception {
+		log("查询剩余票数");
+		Ticket ticket = ticketMapper.selectByPrimaryKey(ticketId);
+		ThreadKit.currentThreadSleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
+		int count = ticket.getCount();
+		if (count > 0) {
+			log("剩余票数:" + count + ", 开始购票");
+			int newCount = count - 1;
+			ticket.setCount(newCount);
+			int flag = ticketMapper.updateByPrimaryKeySelective(ticket);
+			if (flag != 0) {
+				log("购票成功, 剩余票数:" + newCount);
+			} else {
+				error("购票失败");
+			}
 		} else {
-			System.out.println(name + ": 没票了");
+			error("票已售完, 无法购票");
 		}
+		return true;
 	}
 	
+	private void log(String message) {
+		System.out.println(ThreadKit.getCurrentThreadName() + ": " + message);
+	}
+
+	private void error(String message) throws Exception {
+		log(message);
+		String value = ThreadKit.getCurrentThreadName() + ": " + message;
+		throw new Exception(value);
+	}
+
 }
