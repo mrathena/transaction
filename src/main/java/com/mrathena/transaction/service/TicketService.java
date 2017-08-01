@@ -2,8 +2,13 @@ package com.mrathena.transaction.service;
 
 public interface TicketService {
 
-	int getTicketCount(int ticketId);
-	
+	// 普通代码, 会有并发问题
 	boolean buyTicket(int ticketId) throws Exception;
+	
+	// 悲观锁方式
+	boolean buyTicket2(int ticketId) throws Exception;
+	
+	// 乐观锁方式
+	boolean buyTicket3(int ticketId) throws Exception;
 	
 }
