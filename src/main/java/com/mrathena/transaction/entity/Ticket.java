@@ -1,18 +1,14 @@
 package com.mrathena.transaction.entity;
 
-import java.util.Date;
-
 /** ticket */
 public class Ticket {
 
 	/** ticket.id */
 	private Integer id;
-	/** ticket.price */
-	private Integer price;
 	/** ticket.count */
 	private Integer count;
-	/** ticket.lastUpdateTime */
-	private Date lastUpdateTime;
+	/** ticket.version */
+	private Long version;
 
 	/** ticket.id */
 	public Integer getId() {
@@ -27,19 +23,6 @@ public class Ticket {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	/** ticket.price */
-	public Integer getPrice() {
-		return price;
-	}
-	/** ticket.price */
-	public Ticket withPrice(Integer price) {
-		this.setPrice(price);
-		return this;
-	}
-	/** ticket.price */
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
 	/** ticket.count */
 	public Integer getCount() {
 		return count;
@@ -53,18 +36,18 @@ public class Ticket {
 	public void setCount(Integer count) {
 		this.count = count;
 	}
-	/** ticket.lastUpdateTime */
-	public Date getLastUpdateTime() {
-		return lastUpdateTime;
+	/** ticket.version */
+	public Long getVersion() {
+		return version;
 	}
-	/** ticket.lastUpdateTime */
-	public Ticket withLastUpdateTime(Date lastUpdateTime) {
-		this.setLastUpdateTime(lastUpdateTime);
+	/** ticket.version */
+	public Ticket withVersion(Long version) {
+		this.setVersion(version);
 		return this;
 	}
-	/** ticket.lastUpdateTime */
-	public void setLastUpdateTime(Date lastUpdateTime) {
-		this.lastUpdateTime = lastUpdateTime;
+	/** ticket.version */
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

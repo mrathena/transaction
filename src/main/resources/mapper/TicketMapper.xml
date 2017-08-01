@@ -3,18 +3,17 @@
 <mapper namespace="com.mrathena.transaction.dao.TicketMapper">
 	<resultMap id="BaseResultMap" type="com.mrathena.transaction.entity.Ticket">
 		<id column="id" jdbcType="INTEGER" property="id" />
-		<result column="price" jdbcType="INTEGER" property="price" />
 		<result column="count" jdbcType="INTEGER" property="count" />
-		<result column="lastUpdateTime" jdbcType="TIMESTAMP" property="lastUpdateTime" />
+		<result column="version" jdbcType="BIGINT" property="version" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, price, count, lastUpdateTime
+		id, count, version
 	</sql>
 	<insert id="insert" parameterType="com.mrathena.transaction.entity.Ticket">
-		insert into ticket (id, price, count, 
-			lastUpdateTime)
-		values (#{id,jdbcType=INTEGER}, #{price,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}, 
-			#{lastUpdateTime,jdbcType=TIMESTAMP})
+		insert into ticket (id, count, version
+			)
+		values (#{id,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}, #{version,jdbcType=BIGINT}
+			)
 	</insert>
 	<insert id="insertSelective" parameterType="com.mrathena.transaction.entity.Ticket">
 		insert into ticket
@@ -22,49 +21,39 @@
 			<if test="id != null">
 				id,
 			</if>
-			<if test="price != null">
-				price,
-			</if>
 			<if test="count != null">
 				count,
 			</if>
-			<if test="lastUpdateTime != null">
-				lastUpdateTime,
+			<if test="version != null">
+				version,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
 				#{id,jdbcType=INTEGER},
 			</if>
-			<if test="price != null">
-				#{price,jdbcType=INTEGER},
-			</if>
 			<if test="count != null">
 				#{count,jdbcType=INTEGER},
 			</if>
-			<if test="lastUpdateTime != null">
-				#{lastUpdateTime,jdbcType=TIMESTAMP},
+			<if test="version != null">
+				#{version,jdbcType=BIGINT},
 			</if>
 		</trim>
 	</insert>
 	<update id="updateByPrimaryKey" parameterType="com.mrathena.transaction.entity.Ticket">
 		update ticket
-		set price = #{price,jdbcType=INTEGER},
-			count = #{count,jdbcType=INTEGER},
-			lastUpdateTime = #{lastUpdateTime,jdbcType=TIMESTAMP}
+		set count = #{count,jdbcType=INTEGER},
+			version = #{version,jdbcType=BIGINT}
 		where id = #{id,jdbcType=INTEGER}
 	</update>
 	<update id="updateByPrimaryKeySelective" parameterType="com.mrathena.transaction.entity.Ticket">
 		update ticket
 		<set>
-			<if test="price != null">
-				price = #{price,jdbcType=INTEGER},
-			</if>
 			<if test="count != null">
 				count = #{count,jdbcType=INTEGER},
 			</if>
-			<if test="lastUpdateTime != null">
-				lastUpdateTime = #{lastUpdateTime,jdbcType=TIMESTAMP},
+			<if test="version != null">
+				version = #{version,jdbcType=BIGINT},
 			</if>
 		</set>
 		where id = #{id,jdbcType=INTEGER}
@@ -78,12 +67,5 @@
 		<include refid="Base_Column_List" />
 		from ticket
 		where id = #{id,jdbcType=INTEGER}
-	</select>
-	<select id="selectByIdForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-		select 
-		<include refid="Base_Column_List" />
-		from ticket
-		where id = #{id,jdbcType=INTEGER}
-		for update
 	</select>
 </mapper>

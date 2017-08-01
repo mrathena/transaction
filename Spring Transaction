@@ -116,24 +116,30 @@ IOException, SQLException, ...
 
 一些常见情景及解决方案
 
-1.请求的异步回调通知处理
+1.请求的异步回调通知处理(先查询后更新)
 描述: 请求的第一次异步回调通知还在处理中但是第二次异步回调通知已经到了, 这种情况并不是很多
-方案: 悲观锁, 先查询(select ... for update, 只锁一条数据, 不会对别的数据造成影响), 若满足条件则更新
+方案: a.悲观锁, 先查询(select ... for update, 只锁一条数据, 不会对别的数据造成影响), 若满足条件则更新
+     b.乐观锁, 因为这里方法的逻辑会比较长, 乐观锁
+代码结构: 
+public String xxx(xxx, xxx) {
+	select;
+	if(已更新) {
+		return success;
+	}
+	执行各种逻辑;
+	return success;
+}
 
-2.购票
+2.购票(先查询后更新)
 描述: 大家都能看到余票, 但是手快有手慢无
 方案: a.票数字段加check约束(count>0), 然后购票方法不查余票, 直接更新count=count-1, 成功则购票成功, 报错则购票失败
-     b.
+     b.悲观锁, 访问量大的时候会有巨大的性能问题
+		// 悲观锁
+		@Select("select * from ticket where id = #{id} for update")
+		Ticket selectByIdForUpdate(Integer id);
+     c.乐观锁, 
+		// 乐观锁, ticket是更新之前查出来的ticket, 这里传入的 version = ticket.getVersion() + ticket.getCount()
+		@Update("update ticket set count=count-1, version=version+1 where id = 1 and version < #{version}")
+		int updateByIdAndVersion(@Param("id") Integer id, @Param("version") long version);
      
-     
-就用版本号来控制吧, 不用时间戳, 
-首先查出来票有10张, 版本号是100, 那我update语句可以这样写
-update ticket set count=count-1, version=version+1 where id = 1 and version>=version-10
-
-
-
-
-
-
-
 
