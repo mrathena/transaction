@@ -150,4 +150,8 @@ public String xxx(id, xxx) {
 		@Update("update ticket set count=count-1, version=version+1 where id = 1 and version < #{version}")
 		int updateByIdAndVersion(@Param("id") Integer id, @Param("version") long version);
      
+3.注册(先查询后插入)
+描述: 用户名唯一, 先查该用户名有没有被使用, 有则提示, 没有则插入
+方案: 
+
 
