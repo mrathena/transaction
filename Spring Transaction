@@ -119,25 +119,33 @@ IOException, SQLException, ...
 1.请求的异步回调通知处理(先查询后更新)
 描述: 请求的第一次异步回调通知还在处理中但是第二次异步回调通知已经到了, 这种情况并不是很多
 方案: a.悲观锁, 先查询(select ... for update, 只锁一条数据, 不会对别的数据造成影响), 若满足条件则更新
-     b.乐观锁, 因为这里方法的逻辑会比较长, 乐观锁
+     b.乐观锁, 是否需要事务,是否需要异常回滚,需要好好斟酌
 代码结构: 
-public String xxx(xxx, xxx) {
-	select;
-	if(已更新) {
+public String xxx(id, xxx) {
+	Object record = selectById(id);
+	// select * from table where id = #{id}
+	if(record.getStatus() == 1) {
+		// 已更新过
 		return success;
+	} else {
+		// 未更新过
+		updateByIdAndVersion(id, record.getVersion());
+		// update table set status=1, version=version+1 where id = #{id} and version = #{version}
+		执行其他代码;
 	}
-	执行各种逻辑;
 	return success;
 }
 
 2.购票(先查询后更新)
 描述: 大家都能看到余票, 但是手快有手慢无
-方案: a.票数字段加check约束(count>0), 然后购票方法不查余票, 直接更新count=count-1, 成功则购票成功, 报错则购票失败
+方案: a.票数字段加check约束(count>0)(MySQL不支持CHECK约束), 然后购票方法不查余票, 直接更新count=count-1, 成功则购票成功, 报错则购票失败
      b.悲观锁, 访问量大的时候会有巨大的性能问题
 		// 悲观锁
 		@Select("select * from ticket where id = #{id} for update")
 		Ticket selectByIdForUpdate(Integer id);
-     c.乐观锁, 
+		update();
+     c.乐观锁, 是否需要事务,是否需要异常回滚,需要好好斟酌
+     	Ticket selectById(Integer id);
 		// 乐观锁, ticket是更新之前查出来的ticket, 这里传入的 version = ticket.getVersion() + ticket.getCount()
 		@Update("update ticket set count=count-1, version=version+1 where id = 1 and version < #{version}")
 		int updateByIdAndVersion(@Param("id") Integer id, @Param("version") long version);

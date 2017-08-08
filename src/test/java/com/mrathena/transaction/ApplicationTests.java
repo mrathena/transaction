@@ -45,7 +45,7 @@ public class ApplicationTests {
 	@Test
 	public void 测试多线程并发售票_未做任何处理_会有并发问题() {
 		
-		int count = 2;// 创建的子线程数
+		int count = 10;// 创建的子线程数
 		CountDownLatch latch = new CountDownLatch(count);
 		
 		long start = System.currentTimeMillis();
@@ -114,7 +114,7 @@ public class ApplicationTests {
 	public void 测试多线程并发售票_使用乐观锁变种_不用事务_效果不错() {
 		// 可测试1000个人买10张票的时间
 		
-		int count = 1000;// 创建的子线程数
+		int count = 10;// 创建的子线程数
 		CountDownLatch latch = new CountDownLatch(count);
 		
 		long start = System.currentTimeMillis();
