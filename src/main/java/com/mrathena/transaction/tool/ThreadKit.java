@@ -2,11 +2,11 @@ package com.mrathena.transaction.tool;
 
 public class ThreadKit {
 
-	public static String getCurrentThreadName() {
+	public static String getName() {
 		return Thread.currentThread().getName();
 	}
 	
-	public static void currentThreadSleep(int ms) {
+	public static void sleep(int ms) {
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {}

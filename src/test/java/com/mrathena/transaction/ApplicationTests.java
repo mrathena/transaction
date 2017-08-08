@@ -27,7 +27,7 @@ public class ApplicationTests {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					String name = ThreadKit.getCurrentThreadName();
+					String name = ThreadKit.getName();
 					int oldCount = count.getAndDecrement();
 					if (oldCount > 0) {
 						int newCount = oldCount - 1;

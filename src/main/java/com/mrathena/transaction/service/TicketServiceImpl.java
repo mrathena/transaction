@@ -15,7 +15,7 @@ public class TicketServiceImpl implements TicketService {
 	private TicketMapper ticketMapper;
 
 	private void log(String message) {
-		System.out.println(ThreadKit.getCurrentThreadName() + ": " + message);
+		System.out.println(ThreadKit.getName() + ": " + message);
 	}
 	
 	// 多线程并发售票_未做任何处理_会有并发问题
@@ -23,7 +23,7 @@ public class TicketServiceImpl implements TicketService {
 	public boolean buyTicket(int ticketId) throws Exception {
 		log("查询剩余票数");
 		Ticket ticket = ticketMapper.selectByPrimaryKey(ticketId);
-		ThreadKit.currentThreadSleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
+		ThreadKit.sleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
 		int count = ticket.getCount();
 		if (count > 0) {
 			log("购前余票:" + count + ", 开始购票");
@@ -43,7 +43,7 @@ public class TicketServiceImpl implements TicketService {
 	public boolean buyTicket2(int ticketId) throws Exception {
 		log("查询剩余票数");
 		Ticket ticket = ticketMapper.selectByIdForUpdate(ticketId);
-		ThreadKit.currentThreadSleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
+		ThreadKit.sleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
 		int count = ticket.getCount();
 		if (count > 0) {
 			log("购前余票:" + count + ", 开始购票");
@@ -62,7 +62,7 @@ public class TicketServiceImpl implements TicketService {
 	public boolean buyTicket3(int ticketId) throws Exception {
 		log("查询剩余票数");
 		Ticket ticket = ticketMapper.selectByPrimaryKey(ticketId);
-		ThreadKit.currentThreadSleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
+		ThreadKit.sleep(1000);// 模拟查询余票时间, 创造并发问题发生的可能性
 		int count = ticket.getCount();
 		if (count > 0) {
 			log("购前余票:" + count + ", 开始购票");
