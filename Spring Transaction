@@ -116,10 +116,10 @@ IOException, SQLException, ...
 
 一些常见情景及解决方案
 
-1.请求的异步回调通知处理(先查询后更新)
+1.请求的异步回调通知处理(先查询后更新(id,status,version))
 描述: 请求的第一次异步回调通知还在处理中但是第二次异步回调通知已经到了, 这种情况并不是很多
 方案: a.悲观锁, 先查询(select ... for update, 只锁一条数据, 不会对别的数据造成影响), 若满足条件则更新
-     b.乐观锁, 是否需要事务,是否需要异常回滚,需要好好斟酌
+     b.乐观锁, 查询与更新操作放在方法的最前面, 若需要更新但更新失败(受影响的行数为0)则直接return success;
 代码结构: 
 public String xxx(id, xxx) {
 	Object record = selectById(id);
@@ -129,14 +129,20 @@ public String xxx(id, xxx) {
 		return success;
 	} else {
 		// 未更新过
-		updateByIdAndVersion(id, record.getVersion());
+		int count = updateByIdAndVersion(id, record.getVersion());
 		// update table set status=1, version=version+1 where id = #{id} and version = #{version}
-		执行其他代码;
+		if(count == 0) {
+			// 更新失败(说明已经有别的线程更新过数据了)
+			return success;
+		} else {
+			// 更新成功
+			执行其他代码;
+		}
 	}
 	return success;
 }
 
-2.购票(先查询后更新)
+2.购票(先查询后更新(id,count,version))
 描述: 大家都能看到余票, 但是手快有手慢无
 方案: a.票数字段加check约束(count>0)(MySQL不支持CHECK约束), 然后购票方法不查余票, 直接更新count=count-1, 成功则购票成功, 报错则购票失败
      b.悲观锁, 访问量大的时候会有巨大的性能问题
