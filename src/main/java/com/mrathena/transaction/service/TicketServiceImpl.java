@@ -2,7 +2,6 @@ package com.mrathena.transaction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mrathena.transaction.dao.TicketMapper;
@@ -40,7 +39,7 @@ public class TicketServiceImpl implements TicketService {
 
 	// 多线程并发售票_使用悲观锁_会有严重性能问题
 	@Override
-	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+	@Transactional
 	public boolean buyTicket2(int ticketId) throws Exception {
 		log("查询剩余票数");
 		Ticket ticket = ticketMapper.selectByIdForUpdate(ticketId);
