@@ -2,6 +2,7 @@ package com.mrathena.transaction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mrathena.transaction.dao.TicketMapper;
@@ -31,15 +32,15 @@ public class TicketServiceImpl implements TicketService {
 			ticket.setCount(newCount);
 			int flag = ticketMapper.updateByPrimaryKeySelective(ticket);
 			log(flag != 0 ? "购票成功" : "购票失败");
-		} else {
-			log("票已售完, 无法购票");
+			return flag != 0;
 		}
-		return true;
+		log("票已售完, 无法购票");
+		return false;
 	}
 
 	// 多线程并发售票_使用悲观锁_会有严重性能问题
 	@Override
-	@Transactional
+	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
 	public boolean buyTicket2(int ticketId) throws Exception {
 		log("查询剩余票数");
 		Ticket ticket = ticketMapper.selectByIdForUpdate(ticketId);
@@ -51,10 +52,10 @@ public class TicketServiceImpl implements TicketService {
 			ticket.setCount(newCount);
 			int flag = ticketMapper.updateByPrimaryKeySelective(ticket);
 			log(flag != 0 ? "购票成功" : "购票失败");
-		} else {
-			log("票已售完, 无法购票");
+			return flag != 0;
 		}
-		return true;
+		log("票已售完, 无法购票");
+		return false;
 	}
 
 	// 多线程并发售票_使用乐观锁变种_效果不错_不用事务
@@ -69,10 +70,10 @@ public class TicketServiceImpl implements TicketService {
 			long newVersion = ticket.getVersion() + count;
 			int flag = ticketMapper.updateByIdAndVersion(ticketId, newVersion);
 			log(flag != 0 ? "购票成功" : "购票失败");
-		} else {
-			log("票已售完, 无法购票");
+			return flag != 0;
 		}
-		return true;
+		log("票已售完, 无法购票");
+		return false;
 	}
 
 }
