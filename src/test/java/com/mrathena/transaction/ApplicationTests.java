@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.mrathena.transaction.entity.User;
 import com.mrathena.transaction.service.TicketService;
 import com.mrathena.transaction.service.UserService;
+import com.mrathena.transaction.tool.HttpKit;
 import com.mrathena.transaction.tool.ThreadKit;
 
 @RunWith(SpringRunner.class)
@@ -165,21 +166,50 @@ public class ApplicationTests {
 		long end = System.currentTimeMillis();
 		System.out.println("本次测试用时: " + (end - start) + "ms");
 	}
-	
+
 	@Test
 	public void 测试多线程并发注册_测试中() {
-		int count = 9;// 创建的子线程数
+		int count = 2;// 创建的子线程数
 		CountDownLatch latch = new CountDownLatch(count);
 		long start = System.currentTimeMillis();
 		User user = new User().withUsername("mrathena");
 		for (int i = 1; i <= count; i++) {
 			String threadName = "[" + i + "]";
 			new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					try {
 						userService.register2(user);
+						latch.countDown();// 执行完毕, 计数器减1
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}, threadName).start();
+		}
+		try {
+			latch.await();// 主线程等待
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		long end = System.currentTimeMillis();
+		System.out.println("本次测试用时: " + (end - start) + "ms");
+	}
+
+	@Test
+	public void 测试多线程并发注册_测试中2() {
+		int count = 2;// 创建的子线程数
+		CountDownLatch latch = new CountDownLatch(count);
+		long start = System.currentTimeMillis();
+		for (int i = 1; i <= count; i++) {
+			String threadName = "[" + i + "]";
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						HttpKit.postWithMap("http://localhost/user/registe2", null);
 						latch.countDown();// 执行完毕, 计数器减1
 					} catch (Exception e) {
 						e.printStackTrace();
